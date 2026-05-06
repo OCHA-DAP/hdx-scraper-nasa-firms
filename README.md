@@ -42,14 +42,14 @@ The script is idempotent: it CREATEs missing datasets and UPDATEs existing ones,
 
 To add/remove resources, change the description, etc., edit the corresponding constants in `sync_datasets.py`:
 
-| What                        | Edit                                |
-| --------------------------- | ----------------------------------- |
-| Region list                 | `REGIONS`                           |
-| Sensor list                 | `SENSORS`, `LANDSAT_SENSOR`         |
-| Time windows                | `WINDOWS`                           |
-| Output formats              | `FORMATS`                           |
-| Per-region copy / locations | `Region` entries, `NOTES_TEMPLATE`  |
-| Tags / license              | `TAGS`, `LICENSE_ID`                |
+| What                        | Edit                               |
+| --------------------------- | ---------------------------------- |
+| Region list                 | `REGIONS`                          |
+| Sensor list                 | `SENSORS`, `LANDSAT_SENSOR`        |
+| Time windows                | `WINDOWS`                          |
+| Output formats              | `FORMATS`                          |
+| Per-region copy / locations | `Region` entries, `NOTES_TEMPLATE` |
+| Tags / license              | `TAGS`, `LICENSE_ID`               |
 
 Re-run the script to push edits.
 
