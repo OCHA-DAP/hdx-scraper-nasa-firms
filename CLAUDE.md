@@ -203,6 +203,8 @@ When generating notes, prefer building the string as a multi-line literal and pr
 When a script is going to re-run periodically — or you're handing it off to a teammate — promote it from `tmp/` into its own repo. Suggested shape:
 
 ```
+pyproject.toml          # application-style project (no build backend); deps go here
+uv.lock                 # commit this — pins the full resolved dep tree
 run.py                  # entry point — DRY_RUN, HDX_SITE, orchestration loop only
 <project>/              # importable package
   config.py             # IDs, tags, base URL, DATA_DIR
@@ -214,6 +216,8 @@ data/
 README.md               # usage, stage→prod checklist, "what to edit where" table
 ```
 
+Bootstrap: `uv init --app` (or just hand-write `pyproject.toml`), `uv add hdx-python-api`, `uv lock`, `uv sync`. Run with `uv run run.py`.
+
 Rules of thumb when extracting from a single `.py`:
 
 - **Long lists of values → JSON.** CSV gets awkward as soon as a row has a variable-length field (e.g. an ISO3 list per region); JSON keeps the shape and stays diff-friendly.
@@ -221,5 +225,6 @@ Rules of thumb when extracting from a single `.py`:
 - **Knobs (`DRY_RUN`, `HDX_SITE`) at the top of `run.py`**, where they're the first thing you see before running. Static config (IDs, tags, base URL, `USER_AGENT`) lives in `config.py`.
 - **Verify byte-for-byte** when refactoring an existing one-off — load the new modules and compare each constant / rendered template against the old script before deleting it. Silent text drift in `notes`/`methodology_other` is hard to catch later.
 - **README should answer three questions:** how do I run it, how do I promote stage → prod, and which file do I edit to change X (region list, sensor list, copy, tags). A small table beats prose.
+- **Pin via `uv.lock`, not loose `pip install`.** Application-style `pyproject.toml` (no `[build-system]`) is the right fit — it's a tool you run, not a library you import. Commit `uv.lock` so colleagues get the exact same dep tree.
 
 `hdx-scraper-nasa-firms` is the worked example — copy its layout when starting a new pipeline of similar shape.
