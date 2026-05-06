@@ -1,0 +1,14 @@
+[project]
+name = "hdx-scraper-nasa-firms"
+version = "0.1.0"
+description = "HDX dataset sync for NASA FIRMS regional active fire detections"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.13"
+dependencies = ["hdx-python-api>=6.6,<7"]
+
+[dependency-groups]
+dev = ["ruff>=0.6"]
+
+[tool.ruff]
+target-version = "py313"

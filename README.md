@@ -19,11 +19,10 @@ Each dataset has 36 resources (4 sensors × 3 time windows × 3 formats), or 45 
 Prereq: an `~/.hdx_configuration.yaml` with `hdx_key_stage` (and `hdx_key` for prod). See `CLAUDE.md` for the full HDX-API setup.
 
 ```bash
-uv venv --python 3.13
-uv pip install hdx-python-api
+uv sync                  # creates .venv and installs from uv.lock
 
 # Dry run (default — does not write):
-.venv/bin/python run.py
+uv run run.py
 
 # Edit DRY_RUN = False at the top of run.py, then re-run to apply.
 ```
