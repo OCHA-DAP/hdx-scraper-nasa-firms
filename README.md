@@ -23,9 +23,9 @@ uv venv --python 3.13
 uv pip install hdx-python-api
 
 # Dry run (default — does not write):
-.venv/bin/python sync_datasets.py
+.venv/bin/python run.py
 
-# Edit DRY_RUN = False at the top of the script, then re-run to apply.
+# Edit DRY_RUN = False at the top of run.py, then re-run to apply.
 ```
 
 The script is idempotent: it CREATEs missing datasets and UPDATEs existing ones, including reordering resources via `match_resource_order=True`.
@@ -34,24 +34,42 @@ The script is idempotent: it CREATEs missing datasets and UPDATEs existing ones,
 
 1. With `HDX_SITE = "stage"` and `DRY_RUN = True`, run and confirm the diff looks right.
 2. Set `DRY_RUN = False`, re-run, spot-check the URLs printed at the end.
-3. Update `ORG_ID` and `MAINTAINER_ID` to their **prod** equivalents (these IDs differ between sites).
+3. Update `ORG_ID` and `MAINTAINER_ID` in `nasa_firms/config.py` to their **prod** equivalents (these IDs differ between sites).
 4. Set `HDX_SITE = "prod"`, leave `DRY_RUN = True`, dry-run again — confirm there are no slug collisions with someone else's datasets.
 5. Set `DRY_RUN = False`, run for real.
 
 ## Editing the dataset matrix
 
-To add/remove resources, change the description, etc., edit the corresponding constants in `sync_datasets.py`:
+To add/remove resources, change the description, etc., edit the corresponding file:
 
-| What                        | Edit                               |
-| --------------------------- | ---------------------------------- |
-| Region list                 | `REGIONS`                          |
-| Sensor list                 | `SENSORS`, `LANDSAT_SENSOR`        |
-| Time windows                | `WINDOWS`                          |
-| Output formats              | `FORMATS`                          |
-| Per-region copy / locations | `Region` entries, `NOTES_TEMPLATE` |
-| Tags / license              | `TAGS`, `LICENSE_ID`               |
+| What                        | Edit                                                                       |
+| --------------------------- | -------------------------------------------------------------------------- |
+| Region list / locations     | `data/regions.json`                                                        |
+| Sensor list                 | `data/sensors.json` (incl. `landsat_sensor`, `landsat_region_slugs`)       |
+| Time windows / formats      | `data/windows_formats.json`                                                |
+| Dataset description (notes) | `data/notes_template.txt`                                                  |
+| Methodology blurb           | `data/methodology.txt`                                                     |
+| Tags, license, IDs, base URL | `nasa_firms/config.py`                                                    |
+| Resource / dataset shape    | `nasa_firms/builders.py`                                                   |
+| DRY_RUN / HDX_SITE knobs    | `run.py`                                                                   |
 
-Re-run the script to push edits.
+Re-run `run.py` to push edits.
+
+## Layout
+
+```
+run.py                      # entry point — DRY_RUN, HDX_SITE, orchestration loop
+nasa_firms/
+  config.py                 # IDs, tags, base URL, DATA_DIR
+  models.py                 # Sensor, Region NamedTuples + JSON loaders
+  builders.py               # build_resources, build_dataset
+data/
+  regions.json              # 13 regions × ISO3 country lists
+  sensors.json              # MODIS / VIIRS / Landsat
+  windows_formats.json      # 24h/48h/7d × SHP/KML/CSV
+  notes_template.txt        # dataset description (markdown)
+  methodology.txt           # methodology_other field
+```
 
 ## See also
 

@@ -1,0 +1,12 @@
+{
+  "windows": [
+    ["24h", "last 24 hours"],
+    ["48h", "last 48 hours"],
+    ["7d", "last 7 days"]
+  ],
+  "formats": [
+    ["shapes/zips", "zip", "SHP"],
+    ["kml", "kml", "KML"],
+    ["csv", "csv", "CSV"]
+  ]
+}

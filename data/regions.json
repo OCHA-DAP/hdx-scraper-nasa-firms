@@ -1,0 +1,114 @@
+[
+  {
+    "nasa_name": "Global",
+    "pretty": "Global",
+    "slug_part": "global",
+    "locations": ["world"]
+  },
+  {
+    "nasa_name": "Canada",
+    "pretty": "Canada",
+    "slug_part": "canada",
+    "locations": ["can"]
+  },
+  {
+    "nasa_name": "Alaska",
+    "pretty": "Alaska",
+    "slug_part": "alaska",
+    "locations": ["usa"]
+  },
+  {
+    "nasa_name": "USA_contiguous_and_Hawaii",
+    "pretty": "USA (Contiguous & Hawaii)",
+    "slug_part": "usa-contiguous-and-hawaii",
+    "locations": ["usa"]
+  },
+  {
+    "nasa_name": "Central_America",
+    "pretty": "Central America & the Caribbean",
+    "slug_part": "central-america-and-caribbean",
+    "locations": [
+      "mex", "blz", "cri", "slv", "gtm", "hnd", "nic", "pan",
+      "atg", "bhs", "brb", "cub", "dma", "dom", "grd", "hti",
+      "jam", "kna", "lca", "vct", "tto", "pri"
+    ]
+  },
+  {
+    "nasa_name": "South_America",
+    "pretty": "South America",
+    "slug_part": "south-america",
+    "locations": [
+      "arg", "bol", "bra", "chl", "col", "ecu", "flk", "guf",
+      "guy", "pry", "per", "sur", "ury", "ven"
+    ]
+  },
+  {
+    "nasa_name": "Europe",
+    "pretty": "Europe",
+    "slug_part": "europe",
+    "locations": [
+      "alb", "and", "aut", "blr", "bel", "bih", "bgr", "hrv",
+      "cyp", "cze", "dnk", "est", "fin", "fra", "deu", "grc",
+      "hun", "isl", "irl", "ita", "lva", "lie", "ltu", "lux",
+      "mlt", "mda", "mco", "mne", "nld", "mkd", "nor", "pol",
+      "prt", "rou", "smr", "srb", "svk", "svn", "esp", "swe",
+      "che", "tur", "ukr", "gbr", "vat"
+    ]
+  },
+  {
+    "nasa_name": "Northern_and_Central_Africa",
+    "pretty": "Northern and Central Africa",
+    "slug_part": "northern-and-central-africa",
+    "locations": [
+      "dza", "egy", "lby", "mar", "tun", "esh", "sdn", "ssd",
+      "mrt", "mli", "bfa", "ner", "tcd", "sen", "gmb", "gin",
+      "gnb", "sle", "lbr", "civ", "gha", "tgo", "ben", "nga",
+      "cmr", "caf", "gnq", "stp", "gab", "cog", "cod", "eth",
+      "eri", "dji", "som", "ken", "uga", "rwa", "bdi"
+    ]
+  },
+  {
+    "nasa_name": "Southern_Africa",
+    "pretty": "Southern Africa",
+    "slug_part": "southern-africa",
+    "locations": [
+      "zaf", "nam", "bwa", "zwe", "moz", "zmb", "mwi", "mdg",
+      "lso", "swz", "com", "mus", "syc", "ago", "tza"
+    ]
+  },
+  {
+    "nasa_name": "Russia_Asia",
+    "pretty": "Russia and Asia",
+    "slug_part": "russia-and-asia",
+    "locations": [
+      "rus", "kaz", "kgz", "tjk", "tkm", "uzb", "mng", "chn",
+      "prk", "kor", "jpn", "geo", "arm", "aze", "irn", "irq",
+      "syr", "lbn", "isr", "pse", "jor", "sau", "yem", "omn",
+      "are", "qat", "bhr", "kwt"
+    ]
+  },
+  {
+    "nasa_name": "South_Asia",
+    "pretty": "South Asia",
+    "slug_part": "south-asia",
+    "locations": ["afg", "bgd", "btn", "ind", "mdv", "npl", "pak", "lka"]
+  },
+  {
+    "nasa_name": "SouthEast_Asia",
+    "pretty": "Southeast Asia",
+    "slug_part": "southeast-asia",
+    "locations": [
+      "brn", "khm", "idn", "lao", "mys", "mmr", "phl", "sgp",
+      "tha", "tls", "vnm", "png"
+    ]
+  },
+  {
+    "nasa_name": "Australia_NewZealand",
+    "pretty": "Australia and New Zealand",
+    "slug_part": "australia-and-new-zealand",
+    "locations": [
+      "aus", "nzl", "slb", "vut", "ncl", "fji", "ton", "wsm",
+      "cok", "nfk"
+    ]
+  }
+]
