@@ -8,7 +8,7 @@ This repo is a workspace for using agents to drive the [`hdx-python-api`](https:
   - `hdx_key` — prod
   - `hdx_key_stage` — stage
   - `hdx_key_dev` — feature/dev
-- **`user_agent`** — pick a stable identifier per user, e.g. `HDXINTERNAL_<YourName>_AdHoc`. It shows up in audit logs.
+- **`user_agent`** — pick a stable identifier scoped to the work, not the person. Use `HDXINTERNAL_<PROJECT>_AdHoc` (e.g. `HDXINTERNAL_NASA_FIRMS_AdHoc`) for anything durable, or `HDXINTERNAL_<OrgUnit>_AdHoc` for unscoped exploration. It shows up in audit logs, so project/org scope is easier to interpret later than a personal name.
 - **Default site for ad-hoc work:** `stage` (`https://stage.data-humdata-org.ahconu.org/`)
 - **Production:** `prod` (`https://data.humdata.org`) — only after a successful dry-run on stage **and** explicit confirmation from the user in the same session.
 
@@ -106,7 +106,7 @@ ds.add_update_resource(r)                              # matches existing by nam
 ds.update_in_hdx()                                     # actually write
 ```
 
-- **External URL** instead of upload: pass `"url": "https://..."` in the Resource dict; do not call `set_file_to_upload`.
+- **External URL** instead of upload: pass `"url": "https://..."` in the Resource dict; do not call `set_file_to_upload`. Use this when the upstream publishes a stable URL that refreshes in place (e.g. NASA FIRMS) — HDX serves the latest with nothing to mirror. Avoid for unstable URLs or when you need a versioned snapshot.
 - **Replace**: same `name` + `add_update_resource` overwrites the existing one.
 - **Delete**: `ds.delete_resource(resource)` then `ds.update_in_hdx()`.
 - **Reorder**: the displayed order is whatever order you build the resource list in. Pass the full ordered list via `add_update_resources(...)` (or repeated `add_update_resource` calls) and add `match_resource_order=True` to `update_in_hdx` — without that flag, existing resources keep their stored order regardless of input order.
@@ -191,9 +191,35 @@ When generating notes, prefer building the string as a multi-line literal and pr
 ## How to help
 
 - **Default to `stage`.** Before any `prod` write (`create_in_hdx` / `update_in_hdx` / `delete_resource` against `hdx_site="prod"`), confirm with the user in-session — even if they asked for a prod operation earlier, ask again before each write.
-- **Dry-run first.** First run of any new script: `hdx_read_only=True`, print what _would_ change, then flip to `False`.
+- **Dry-run first.** First run of any new script: `hdx_read_only=True`, build the dataset object, call `ds.check_required_fields()` to surface missing fields before hitting the network, print what _would_ change, then flip to `False`.
 - **Make scripts idempotent** — branch on `Dataset.read_from_hdx(slug)` returning `None` (CREATE) vs an existing dataset (UPDATE). The same script then doubles as the maintenance/sync script.
 - **Print the dataset URL after every write** so the user can spot-check in the browser. Use `https://stage.data-humdata-org.ahconu.org/dataset/<slug>` for stage, `https://data.humdata.org/dataset/<slug>` for prod.
 - **Never invent a dataset slug.** Ask the user for the exact slug or list candidates via `Dataset.search_in_hdx("...")`.
 - **Ad-hoc scripts live in `tmp/`.** Don't create top-level `.py` files; don't commit anything in `tmp/`.
-- **Existing pipelines for reference patterns:** the OCHA-DAP GitHub org has good examples — `dpt-internal-scripts`, `hdx-scraper-cod-ab-country`, `hdx-scraper-cod-ab-global`.
+- **Existing pipelines for reference patterns:** the OCHA-DAP GitHub org has good examples — `hdx-scraper-nasa-firms` (small; package layout with JSON/TXT data files — matches the structure in _Graduating from ad-hoc to a durable pipeline_ below), `dpt-internal-scripts`, `hdx-scraper-cod-ab-country`, `hdx-scraper-cod-ab-global`.
+
+## Graduating from ad-hoc to a durable pipeline
+
+When a script is going to re-run periodically — or you're handing it off to a teammate — promote it from `tmp/` into its own repo. Suggested shape:
+
+```
+run.py                  # entry point — DRY_RUN, HDX_SITE, orchestration loop only
+<project>/              # importable package
+  config.py             # IDs, tags, base URL, DATA_DIR
+  models.py             # NamedTuples + JSON loaders
+  builders.py           # build_resources, build_dataset
+data/
+  *.json                # long lists of values (regions × ISO3, sensor tables)
+  *.txt                 # long markdown/copy (notes template, methodology blurb)
+README.md               # usage, stage→prod checklist, "what to edit where" table
+```
+
+Rules of thumb when extracting from a single `.py`:
+
+- **Long lists of values → JSON.** CSV gets awkward as soon as a row has a variable-length field (e.g. an ISO3 list per region); JSON keeps the shape and stays diff-friendly.
+- **Long markdown/copy → TXT.** One paragraph per line; placeholders like `{pretty}` survive `.format()`. Easier to spot a missing blank-line-before-bullet in a .txt than in a triple-quoted string with `\` line continuations.
+- **Knobs (`DRY_RUN`, `HDX_SITE`) at the top of `run.py`**, where they're the first thing you see before running. Static config (IDs, tags, base URL, `USER_AGENT`) lives in `config.py`.
+- **Verify byte-for-byte** when refactoring an existing one-off — load the new modules and compare each constant / rendered template against the old script before deleting it. Silent text drift in `notes`/`methodology_other` is hard to catch later.
+- **README should answer three questions:** how do I run it, how do I promote stage → prod, and which file do I edit to change X (region list, sensor list, copy, tags). A small table beats prose.
+
+`hdx-scraper-nasa-firms` is the worked example — copy its layout when starting a new pipeline of similar shape.
