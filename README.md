@@ -1,10 +1,10 @@
 # hdx-scraper-nasa-firms
 
-Maintains the [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/active_fire/) datasets on HDX. Each HDX dataset is one NASA FIRMS region with **external-URL resources pointing directly at NASA-hosted files** — there is no local data fetching, no transformation, and no upload. Files refresh on NASA's side (typically every 3 hours); HDX always serves the latest.
+Maintains the [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/active_fire/) datasets on HDX. Each HDX dataset is one NASA FIRMS region × sensor family with **external-URL resources pointing directly at NASA-hosted files** — there is no local data fetching, no transformation, and no upload. Files refresh on NASA's side (typically every 3 hours); HDX always serves the latest.
 
 ## What it creates
 
-13 datasets under [`organization/nasa-firms`](https://data.humdata.org/organization/nasa-firms), one per NASA-defined region:
+28 datasets under [`organization/nasa-firms`](https://data.humdata.org/organization/nasa-firms), one per (region × sensor family) pair. The 13 regions are:
 
 ```
 Global, Canada, Alaska, USA (Contiguous & Hawaii), Central America & Caribbean,
@@ -12,7 +12,15 @@ South America, Europe, Northern and Central Africa, Southern Africa,
 Russia and Asia, South Asia, Southeast Asia, Australia and New Zealand
 ```
 
-Each dataset has 36 resources (4 sensors × 3 time windows × 3 formats), or 45 for Canada and the contiguous USA + Hawaii (which add Landsat 8/9 OLI). Resource ordering on HDX mirrors the FIRMS download page (Shapefile → KML → CSV; MODIS → S-NPP → NOAA-20 → NOAA-21 → Landsat; 24h → 48h → 7d).
+Each region produces a MODIS dataset and a VIIRS dataset; Canada and USA (Contiguous & Hawaii) additionally produce a Landsat dataset. Resource counts:
+
+| Family  | Sensors                                  | Resources / dataset |
+| ------- | ---------------------------------------- | ------------------- |
+| MODIS   | MODIS C6.1                               | 9 (1 × 3 × 3)       |
+| VIIRS   | S-NPP, NOAA-20, NOAA-21                  | 27 (3 × 3 × 3)      |
+| Landsat | Landsat 8/9 OLI (Canada + USA only)      | 9 (KML uses animated_48h instead of 7d) |
+
+Resource ordering on HDX mirrors the FIRMS download page (Shapefile → KML → CSV; within VIIRS: S-NPP → NOAA-20 → NOAA-21; 24h → 48h → 7d).
 
 ## Usage
 
@@ -41,16 +49,17 @@ The script is idempotent: it CREATEs missing datasets and UPDATEs existing ones,
 
 To add/remove resources, change the description, etc., edit the corresponding file:
 
-| What                        | Edit                                                                       |
-| --------------------------- | -------------------------------------------------------------------------- |
-| Region list / locations     | `data/regions.json`                                                        |
-| Sensor list                 | `data/sensors.json` (incl. `landsat_sensor`, `landsat_region_slugs`)       |
-| Time windows / formats      | `data/windows_formats.json`                                                |
-| Dataset description (notes) | `data/notes_template.txt`                                                  |
-| Methodology blurb           | `data/methodology.txt`                                                     |
-| Tags, license, IDs, base URL | `nasa_firms/config.py`                                                    |
-| Resource / dataset shape    | `nasa_firms/builders.py`                                                   |
-| DRY_RUN / HDX_SITE knobs    | `run.py`                                                                   |
+| What                          | Edit                                                                       |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| Region list / locations       | `data/regions.json`                                                        |
+| Sensor families / `since` lines / Landsat region carve-out | `data/sensors.json` (the `families` list)            |
+| Time windows / formats        | `data/windows_formats.json`                                                |
+| Dataset description (notes)   | `data/notes_template.txt`                                                  |
+| Methodology (per family)      | `data/methodology_modis.txt`, `methodology_viirs.txt`, `methodology_landsat.txt` |
+| Caveats (coverage note)       | `data/caveats.txt`                                                         |
+| Tags, license, IDs, base URL  | `nasa_firms/config.py`                                                     |
+| Resource / dataset shape      | `nasa_firms/builders.py`                                                   |
+| DRY_RUN / HDX_SITE knobs      | `run.py`                                                                   |
 
 Re-run `run.py` to push edits.
 
@@ -60,14 +69,15 @@ Re-run `run.py` to push edits.
 run.py                      # entry point — DRY_RUN, HDX_SITE, orchestration loop
 nasa_firms/
   config.py                 # IDs, tags, base URL, DATA_DIR
-  models.py                 # Sensor, Region NamedTuples + JSON loaders
-  builders.py               # build_resources, build_dataset
+  models.py                 # Sensor, Region, Family NamedTuples + JSON loaders
+  builders.py               # build_resources, build_dataset (per region × family)
 data/
   regions.json              # 13 regions × ISO3 country lists
-  sensors.json              # MODIS / VIIRS / Landsat
+  sensors.json              # families: MODIS / VIIRS / Landsat
   windows_formats.json      # 24h/48h/7d × SHP/KML/CSV
   notes_template.txt        # dataset description (markdown)
-  methodology.txt           # methodology_other field
+  methodology_<family>.txt  # methodology_other field, one per sensor family
+  caveats.txt               # caveats field (coverage / bbox note)
 ```
 
 ## See also

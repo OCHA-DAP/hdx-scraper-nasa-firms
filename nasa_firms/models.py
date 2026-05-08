@@ -21,6 +21,15 @@ class Region(NamedTuple):
     locations: list[str]  # ISO3 lowercase, or ["world"] for global
 
 
+class Family(NamedTuple):
+    suffix: str  # dataset slug suffix, e.g. "modis"
+    display: str  # title-case display name, e.g. "MODIS"
+    since: str  # one-line "since YYYY" string for the notes template
+    data_start: str  # ISO date when this family's FIRMS archive begins
+    sensors: list[Sensor]
+    only_region_slugs: frozenset[str] | None  # None = all regions
+
+
 def load_regions() -> list[Region]:
     # NASA's regions overlap and are bbox-cut, so the per-region country lists
     # are the *primary* coverage per UN M49 with adjacent-country additions
@@ -30,13 +39,35 @@ def load_regions() -> list[Region]:
     return [Region(**r) for r in data]
 
 
-def load_sensors() -> tuple[list[Sensor], Sensor, set[str]]:
-    # Landsat OLI 8/9 is published by NASA only for Canada and the contiguous
-    # USA (+ Hawaii); KML doesn't get a 7d file — it gets an animated_48h.
+def load_families() -> list[Family]:
+    # Each family becomes one HDX dataset per region, so each dataset is a
+    # filterable single-sensor (or single sensor-line, in VIIRS's case) view.
+    # Landsat is restricted to Canada + USA-Contiguous-and-Hawaii — it's the
+    # only family NASA publishes selectively, and KML uses animated_48h instead
+    # of 7d (handled in builders.windows_for).
     data = json.loads((DATA_DIR / "sensors.json").read_text())
-    sensors = [Sensor(**s) for s in data["sensors"]]
-    landsat = Sensor(**data["landsat_sensor"])
-    return sensors, landsat, set(data["landsat_region_slugs"])
+    families = []
+    for f in data["families"]:
+        only = f.get("only_region_slugs")
+        families.append(
+            Family(
+                suffix=f["suffix"],
+                display=f["display"],
+                since=f["since"],
+                data_start=f["data_start"],
+                sensors=[Sensor(**s) for s in f["sensors"]],
+                only_region_slugs=frozenset(only) if only else None,
+            )
+        )
+    return families
+
+
+def families_for_region(families: list[Family], region: Region) -> list[Family]:
+    return [
+        f
+        for f in families
+        if f.only_region_slugs is None or region.slug_part in f.only_region_slugs
+    ]
 
 
 def load_windows_formats() -> (

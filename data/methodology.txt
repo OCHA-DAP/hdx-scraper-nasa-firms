@@ -1,1 +1,0 @@
-Active fire / thermal anomaly detections derived from MODIS (1 km) and VIIRS (375 m) instruments. Detections are produced by NASA's Land, Atmosphere Near real-time Capability for EOS (LANCE) and distributed via FIRMS. See https://earthdata.nasa.gov/faq/firms-faq for algorithm details, known limitations, and disclaimer.

@@ -1,0 +1,3 @@
+Active fire / thermal anomaly detections derived from MODIS (1 km) instruments aboard the Terra and Aqua satellites. Detections are produced by NASA's Land, Atmosphere Near real-time Capability for EOS (LANCE) and distributed via FIRMS. See https://earthdata.nasa.gov/faq/firms-faq for algorithm details, known limitations, and disclaimer.
+
+Each detection is a 1 km pixel where the sensor identified a thermal anomaly. Common attributes include latitude, longitude, brightness temperature, scan/track pixel size, acquisition date/time (UTC), detection confidence, fire radiative power (FRP), and day/night flag.

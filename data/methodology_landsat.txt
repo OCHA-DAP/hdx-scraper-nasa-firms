@@ -1,0 +1,3 @@
+Active fire / thermal anomaly detections derived from the Landsat 8/9 OLI sensor (30 m). Distributed via NASA's Fire Information for Resource Management System (FIRMS), with the Landsat product available for Canada and the contiguous USA + Hawaii only. See https://earthdata.nasa.gov/faq/firms-faq for algorithm details, attribute schema, known limitations, and disclaimer.
+
+Each detection is a 30 m pixel where the sensor identified a thermal anomaly. Common attributes include latitude, longitude, path/row, acquisition date/time (UTC), and detection confidence.

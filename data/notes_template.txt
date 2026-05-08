@@ -1,28 +1,7 @@
-Near-real-time active fire and thermal anomaly detections from NASA's Fire Information for Resource Management System (FIRMS) covering **{pretty}**.
+Near-real-time active fire and thermal anomaly detections from NASA's [Fire Information for Resource Management System (FIRMS)](https://firms.modaps.eosdis.nasa.gov/active_fire/) covering **{pretty}**, derived from the **{family_display}** sensor family ({since}).
 
 Each resource is an external link directly to a NASA-hosted file. The files are continuously updated as new satellite overpasses are processed (typically within 3 hours of acquisition).
 
-**Formats:**
+**Formats:** SHP, KML, CSV
 
-- Zipped Shapefile
-- KML
-- CSV
-
-**Sensors:**
-
-- MODIS Collection 6.1 — Terra and Aqua satellites (since 2000/2002)
-- VIIRS Collection 2 — Suomi-NPP (since 2011)
-- VIIRS Collection 2 — NOAA-20 (since 2017)
-- VIIRS Collection 2 — NOAA-21 (since 2022){landsat_line}
-
-**Time windows:**
-
-- Last 24 hours
-- Last 48 hours
-- Last 7 days{landsat_kml_note}
-
-Each detection is a 375 m (VIIRS) or 1 km (MODIS) pixel where the sensor identified a thermal anomaly. Common attributes include latitude, longitude, brightness temperature, scan/track pixel size, acquisition date/time (UTC), detection confidence, fire radiative power (FRP), and day/night flag.
-
-**Note on coverage:** NASA's "{pretty}" file is bounded by a fixed lat/lon box, which may include parts of adjacent countries beyond the locations listed for this dataset. For arbitrary bounding boxes or country-level extracts, use the FIRMS Area API (https://firms.modaps.eosdis.nasa.gov/api/area/) with a free MAP_KEY.
-
-Data source: https://firms.modaps.eosdis.nasa.gov/active_fire/
+**Time windows:** Last 24h, 48h, 7d{landsat_kml_note}

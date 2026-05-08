@@ -120,7 +120,7 @@ ds["title"] = "New title"
 ds["notes"] = "New description..."
 ds["methodology_other"] = "..."
 ds["caveats"] = "..."
-ds["data_update_frequency"] = 7              # days, int (-1 = "as needed", 0 = never)
+ds["data_update_frequency"] = 7              # days, int (0 = "live", -1 = never, -2 = "as needed")
 ds.add_country_location("ssd")               # ISO3, lowercase; or add_other_location("world")
 ds.set_time_period(start, end)               # datetime objects (NOT date — see gotchas)
 ds.add_tags(["conflict", "displacement"])    # must be HDX-approved tags
@@ -167,6 +167,14 @@ assert Country.get_country_info_from_iso3("SSD") is not None
 
 **Title convention.** Sampling stage HDX shows the dominant pattern is `<Region/Country>: <Description>` (colon-space separator) with `<Country>: <Event> - <Detail> - <Date>` (space-hyphen-space) a close second for emergency datasets. Em-dashes are nearly absent. Region/country goes first as the qualifier.
 
+**What goes where: `notes` vs `methodology_other` vs `caveats`.** All three are markdown, but they render in different places on the HDX dataset page. Match content to intent:
+
+- `notes` — what the dataset *is*: scope, formats, time windows, source link. First thing a user reads to decide whether to download anything.
+- `methodology_other` — how the data was *produced*: sensor characteristics, attribute definitions, algorithm references. Set `methodology = "Other"` first to enable this field.
+- `caveats` — *warnings* about scope or limitations: "bbox includes adjacent countries", "pre-2020 values unreliable", "snapshot, not a time series".
+
+When trimming a long `notes` field, move inline "Methodology:" / "Note on coverage:" subsections into the structured field rather than leaving them in the description — they show up in the right place on HDX *and* stay parseable for downstream consumers.
+
 **Description (notes) field is markdown**, but CKAN's renderer is strict:
 
 - **Lists need a blank line before the first bullet.** `**Heading:**\n- item` renders as plain text; you need `**Heading:**\n\n- item`. Real HDX datasets use `\r\n\r\n-` style separation. Same applies after any paragraph that precedes a list.
@@ -180,12 +188,13 @@ When generating notes, prefer building the string as a multi-line literal and pr
 - `hdx_read_only=True` blocks writes only — `Dataset.read_from_hdx` still hits the live API.
 - **`set_time_period` requires `datetime`, not `date`** — bare `date` objects raise `TypeError: replace() takes at most 3 keyword arguments`. Use `datetime(..., tzinfo=timezone.utc)` or an ISO string.
 - **`"private"` is a required field** on creation. `check_required_fields()` fails with `Field private is missing`. Set `"private": False` (or True) explicitly in the Dataset dict.
-- `data_update_frequency` is **days as int**, not a cron string: `7` weekly, `1` daily, `-1` "as needed", `0` never.
+- `data_update_frequency` is **days as int**, not a cron string: `7` weekly, `1` daily, `0` "live", `-1` never, `-2` "as needed". Note `0` is **live**, not never — easy to get backwards.
 - `subnational` and `p_coded` are the strings `"1"`/`"0"` and `"True"`/`"False"`, not Python bools.
 - Filestore uploads require a real on-disk path; presigned/remote URLs aren't supported by `set_file_to_upload`.
 - `update_in_hdx(remove_additional_resources=True)` **deletes** any resource not in the current list — leave it `False` for additive ad-hoc edits.
 - Stage and prod are separate databases. A slug that exists on prod may not exist on stage; copy the dataset over first if you need to dry-run.
 - `Configuration.create()` is one-shot per process — to switch sites, exit and re-run the script.
+- **`Resource()` and `Dataset()` constructors require `Configuration.create()` first**, even for offline-only object construction with no network calls. Without it: `ConfigurationError: There is no HDX configuration!`. Call `Configuration.create(..., hdx_read_only=True)` at the top of any local-only build/inspect/compare script.
 - Tags are validated against the HDX-approved vocabulary; unknown tags are silently dropped or rejected by CKAN. There's no `fire`/`wildfire`/`satellite` tag — see _Looking up IDs and vocabularies_ above.
 
 ## How to help

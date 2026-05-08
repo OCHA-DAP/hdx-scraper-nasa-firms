@@ -1,0 +1,1 @@
+NASA's "{pretty}" file is bounded by a fixed lat/lon box, which may include parts of adjacent countries beyond the locations listed for this dataset. For arbitrary bounding boxes or country-level extracts, use the FIRMS Area API (https://firms.modaps.eosdis.nasa.gov/api/area/) with a free MAP_KEY.
