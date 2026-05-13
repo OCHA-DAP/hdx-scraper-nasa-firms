@@ -169,11 +169,11 @@ assert Country.get_country_info_from_iso3("SSD") is not None
 
 **What goes where: `notes` vs `methodology_other` vs `caveats`.** All three are markdown, but they render in different places on the HDX dataset page. Match content to intent:
 
-- `notes` — what the dataset *is*: scope, formats, time windows, source link. First thing a user reads to decide whether to download anything.
-- `methodology_other` — how the data was *produced*: sensor characteristics, attribute definitions, algorithm references. Set `methodology = "Other"` first to enable this field.
-- `caveats` — *warnings* about scope or limitations: "bbox includes adjacent countries", "pre-2020 values unreliable", "snapshot, not a time series".
+- `notes` — what the dataset _is_: scope, formats, time windows, source link. First thing a user reads to decide whether to download anything.
+- `methodology_other` — how the data was _produced_: sensor characteristics, attribute definitions, algorithm references. Set `methodology = "Other"` first to enable this field.
+- `caveats` — _warnings_ about scope or limitations: "bbox includes adjacent countries", "pre-2020 values unreliable", "snapshot, not a time series".
 
-When trimming a long `notes` field, move inline "Methodology:" / "Note on coverage:" subsections into the structured field rather than leaving them in the description — they show up in the right place on HDX *and* stay parseable for downstream consumers.
+When trimming a long `notes` field, move inline "Methodology:" / "Note on coverage:" subsections into the structured field rather than leaving them in the description — they show up in the right place on HDX _and_ stay parseable for downstream consumers.
 
 **Description (notes) field is markdown**, but CKAN's renderer is strict:
 
