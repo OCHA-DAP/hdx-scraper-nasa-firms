@@ -120,7 +120,7 @@ ds["title"] = "New title"
 ds["notes"] = "New description..."
 ds["methodology_other"] = "..."
 ds["caveats"] = "..."
-ds["data_update_frequency"] = 7              # days, int (0 = "live", -1 = never, -2 = "as needed")
+ds["data_update_frequency"] = "7"            # days as string (see gotchas — int 0 trips check_required_fields)
 ds.add_country_location("ssd")               # ISO3, lowercase; or add_other_location("world")
 ds.set_time_period(start, end)               # datetime objects (NOT date — see gotchas)
 ds.add_tags(["conflict", "displacement"])    # must be HDX-approved tags
@@ -142,7 +142,7 @@ ds = Dataset({
     "methodology": "Other",
     "methodology_other": "...",
     "license_id": "cc-by",
-    "data_update_frequency": -1,
+    "data_update_frequency": "-1",
     "private": False,            # required; bool
     "subnational": "1",          # "1" sub-national, "0" national-only — string, not bool
 })
@@ -188,7 +188,7 @@ When generating notes, prefer building the string as a multi-line literal and pr
 - `hdx_read_only=True` blocks writes only — `Dataset.read_from_hdx` still hits the live API.
 - **`set_time_period` requires `datetime`, not `date`** — bare `date` objects raise `TypeError: replace() takes at most 3 keyword arguments`. Use `datetime(..., tzinfo=timezone.utc)` or an ISO string.
 - **`"private"` is a required field** on creation. `check_required_fields()` fails with `Field private is missing`. Set `"private": False` (or True) explicitly in the Dataset dict.
-- `data_update_frequency` is **days as int**, not a cron string: `7` weekly, `1` daily, `0` "live", `-1` never, `-2` "as needed". Note `0` is **live**, not never — easy to get backwards.
+- `data_update_frequency` is **days as a string**, not a cron string and not a Python int: `"7"` weekly, `"1"` daily, `"0"` "live", `"-1"` never, `"-2"` "as needed". Note `"0"` is **live**, not never — easy to get backwards. Why string: `Dataset.set_expected_update_frequency` str-converts before storing and CKAN persists a string, but more importantly the SDK's `_check_required_fields` does `not value and not isinstance(value, bool)` — int `0` is falsy and not a bool, so it raises `Field data_update_frequency is empty` even though `0` is a valid value. The check fires inside `update_in_hdx` / `create_in_hdx`, so writes fail too. Pass strings to sidestep it.
 - `subnational` and `p_coded` are the strings `"1"`/`"0"` and `"True"`/`"False"`, not Python bools.
 - Filestore uploads require a real on-disk path; presigned/remote URLs aren't supported by `set_file_to_upload`.
 - `update_in_hdx(remove_additional_resources=True)` **deletes** any resource not in the current list — leave it `False` for additive ad-hoc edits.
