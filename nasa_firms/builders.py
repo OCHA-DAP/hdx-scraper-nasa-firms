@@ -91,7 +91,7 @@ def build_dataset(region: Region, family: Family) -> Dataset:
             "methodology_other": methodology_for(family),
             "caveats": CAVEATS_TEMPLATE.format(pretty=region.pretty),
             "license_id": LICENSE_ID,
-            "data_update_frequency": "0",  # live (string, per SDK convention — int 0 trips check_required_fields)
+            "data_update_frequency": "1",  # daily
             "subnational": "1",  # point-level / sub-national
             "private": False,
         }
